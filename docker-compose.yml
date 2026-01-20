@@ -1,0 +1,56 @@
+services:
+  app-blue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blue-green-deployment:1.0.0
+    container_name: blue-green-app-blue
+    environment:
+      PORT: 4000
+      APP_VERSION: 1.0.0
+      DEPLOYMENT_COLOR: blue
+    expose:
+      - "4000"
+    networks:
+      - blue-green-network
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:4000/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  app-green:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blue-green-deployment:1.0.0
+    container_name: blue-green-app-green
+    environment:
+      PORT: 4000
+      APP_VERSION: 1.1.0
+      DEPLOYMENT_COLOR: green
+    expose:
+      - "4000"
+    networks:
+      - blue-green-network
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:4000/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+networks:
+  blue-green-network:
+    driver: bridge
