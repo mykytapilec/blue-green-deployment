@@ -67,6 +67,29 @@ services:
       - blue-green-network
     restart: unless-stopped
 
+  prometheus:
+    image: prom/prometheus:v3.8.1
+    container_name: blue-green-prometheus
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    depends_on:
+      app-blue:
+        condition: service_healthy
+      app-green:
+        condition: service_healthy
+    networks:
+      - blue-green-network
+    restart: unless-stopped
+
 networks:
   blue-green-network:
     driver: bridge
+
+volumes:
+  prometheus-data:
