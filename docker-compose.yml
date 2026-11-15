@@ -51,6 +51,22 @@ services:
       start_period: 5s
     restart: unless-stopped
 
+  nginx:
+    image: nginx:alpine
+    container_name: blue-green-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+    depends_on:
+      app-blue:
+        condition: service_healthy
+      app-green:
+        condition: service_healthy
+    networks:
+      - blue-green-network
+    restart: unless-stopped
+
 networks:
   blue-green-network:
     driver: bridge
