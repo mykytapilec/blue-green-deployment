@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Blue-Green Deployment
+    orgId: 1
+    folder: Blue-Green Deployment
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
